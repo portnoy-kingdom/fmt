@@ -1,0 +1,17 @@
+# Reproduction for IBS-1298: multiple jobs targeting the Incredibuild runner
+# all sit in "queued" when no runner is provisioned/online.
+# Each job is intentionally trivial (no sudo, no build) so that ANY delay
+# is attributable to runner provisioning, not to the work itself.
+name: repro-multi-job-queue
+on: [push, pull_request]
+jobs:
+  fanout:
+    name: repro job ${{ matrix.n }}
+    runs-on: incredibuild-runner
+    strategy:
+      fail-fast: false
+      matrix:
+        n: [1, 2, 3, 4, 5]
+    steps:
+      - name: Prove the runner picked up the job
+        run: echo "Job ${{ matrix.n }} started on $(hostname) at $(date -u)"
